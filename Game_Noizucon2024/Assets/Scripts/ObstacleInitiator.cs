@@ -6,6 +6,7 @@ public class ObstacleInitiator : MonoBehaviour
 
     [Header("Developer Options")] 
     [SerializeField] private float initCd = 3;
+    [SerializeField] private float spawnRange = 5;
     private float currentCd;
     private float basePositionY;
     private float newPositionY;
@@ -22,7 +23,7 @@ public class ObstacleInitiator : MonoBehaviour
     void Init() {
         currentCd -= Time.deltaTime;
         if (currentCd <= 0) {
-            newPositionY = basePositionY + Random.Range(0f,3f);
+            newPositionY = basePositionY + Random.Range(0f,spawnRange);
             Instantiate(
                 obstacle, 
                 new Vector3(transform.position.x, newPositionY), 
