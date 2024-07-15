@@ -5,41 +5,43 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    private Rigidbody2D rb2d;
+    private Rigidbody2D _rb2d;
 
-    [SerializeField] private Slider jumpSlider;
-    [SerializeField] private float jumpForceMultiplier = 1.5f;
-    [SerializeField] private float jumpForceMaximum = 8.0f;
-    private float jumpForce;
+    [SerializeField] private Slider _jumpSlider;
+    [SerializeField] private float _jumpForceMultiplier = 1.5f;
+    [SerializeField] private float _jumpForceMaximum = 8.0f;
+    private float _jumpForce;
 
     void Start()
     {
-        rb2d = GetComponent<Rigidbody2D>();
-        jumpSlider.minValue = 0;
-        jumpSlider.maxValue = jumpForceMaximum;
+        _rb2d = GetComponent<Rigidbody2D>();
+        _jumpSlider.minValue = 0;
+        _jumpSlider.maxValue = _jumpForceMaximum;
     }
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.UpArrow)) {
-            if (jumpForce <= jumpForceMaximum) {
-                jumpForce += jumpForceMultiplier * Time.deltaTime;
+        if (Input.GetKey(KeyCode.UpArrow)) 
+        {
+            if (_jumpForce <= _jumpForceMaximum) 
+            {
+                _jumpForce += _jumpForceMultiplier * Time.deltaTime;
                 UpdateSlider();
             }
-            Debug.Log("[Holding down Up Key] Jump force: " + jumpForce);
+            Debug.Log("[Holding down Up Key] Jump force: " + _jumpForce);
         }
 
-        if (Input.GetKeyUp(KeyCode.UpArrow)) {
-            rb2d.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            Debug.Log("[Release Up Key] Jumped with force: " + jumpForce);
-            jumpForce = 0;
+        if (Input.GetKeyUp(KeyCode.UpArrow)) 
+        {
+            _rb2d.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
+            Debug.Log("[Release Up Key] Jumped with force: " + _jumpForce);
+            _jumpForce = 0;
             UpdateSlider();
         }
 
     }
 
-    // Call by slider in OnChangeValue()
     void UpdateSlider() {
-        jumpSlider.value = jumpForce;
+        _jumpSlider.value = _jumpForce;
     }
 }

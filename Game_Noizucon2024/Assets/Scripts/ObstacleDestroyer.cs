@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class ObstacleDestroyer : MonoBehaviour
 {
-    void OnCollisionEnter2D(Collision2D collision2D) {
-        if (collision2D.gameObject.tag == "Obstacle") {
+    void OnCollisionEnter2D(Collision2D collision2D) 
+    {
+        if (collision2D.gameObject.tag == "Platform") 
+        {
             Destroy(collision2D.gameObject);
         }
     }
