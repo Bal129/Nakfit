@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Slider _jumpSlider;
     [SerializeField] private float _jumpForceMultiplier = 1.5f;
     [SerializeField] private float _jumpForceMaximum = 8.0f;
+    [SerializeField] private float _jumpForceMinimum = 2.0f;
     private float _jumpForce;
 
     void Start()
@@ -21,20 +22,23 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.UpArrow)) 
+        if (Input.GetKey(KeyCode.Space)) 
         {
             if (_jumpForce <= _jumpForceMaximum) 
             {
                 _jumpForce += _jumpForceMultiplier * Time.deltaTime;
                 UpdateSlider();
             }
-            Debug.Log("[Holding down Up Key] Jump force: " + _jumpForce);
+            Debug.Log("[Holding down Space Key] Jump force: " + _jumpForce);
         }
 
-        if (Input.GetKeyUp(KeyCode.UpArrow)) 
+        if (Input.GetKeyUp(KeyCode.Space)) 
         {
-            _rb2d.AddForce(Vector2.up * _jumpForce, ForceMode2D.Impulse);
-            Debug.Log("[Release Up Key] Jumped with force: " + _jumpForce);
+            if (_jumpForce > _jumpForceMinimum)
+            {
+                _rb2d.AddForce(Vector2.right + (Vector2.up * _jumpForce), ForceMode2D.Impulse);
+                Debug.Log("[Release Space Key] Jumped with force: " + _jumpForce);
+            }
             _jumpForce = 0;
             UpdateSlider();
         }

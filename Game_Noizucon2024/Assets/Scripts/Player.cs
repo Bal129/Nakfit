@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -30,8 +29,8 @@ public class Player : MonoBehaviour
     {
         if (collision2D.gameObject.tag == "Obstacle" && !_inImmortalMode)
         {
-            Debug.Log("Dead");
             SetIsAlive(false);
+            this.gameObject.transform.parent = null;
         }
 
         if (collision2D.gameObject.tag == "Platform")
