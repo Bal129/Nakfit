@@ -9,6 +9,9 @@ public class Player : MonoBehaviour
     [SerializeField] private bool _isAlive = true;
     [SerializeField] private bool _inImmortalMode = false;
 
+    [Header("Scoring System")]
+    [SerializeField] private GameManager _gameManager;
+
     public void SetIsAlive(bool isAlive)
     {
         _isAlive = isAlive;
@@ -36,6 +39,13 @@ public class Player : MonoBehaviour
         if (collision2D.gameObject.tag == "Platform")
         {
             this.gameObject.transform.parent = collision2D.gameObject.transform;
+        }
+
+        if (collision2D.gameObject.tag == "Score")
+        {
+            ScoreBehavior scoreBehavior = collision2D.gameObject.GetComponent<ScoreBehavior>();
+            _gameManager.SetScore(_gameManager.GetScore() + scoreBehavior.GetScoreValue());
+            Destroy(collision2D.gameObject);
         }
     }
 
