@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
 public class ObstacleBehavior : MonoBehaviour
 {
@@ -8,7 +7,7 @@ public class ObstacleBehavior : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(Vector2.down * _obstacleSpeed * Time.deltaTime);
+        transform.Translate(Vector2.left * _obstacleSpeed * Time.deltaTime);
     }
 
     void OnCollisionEnter2D(Collision2D collision2D) 

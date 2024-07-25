@@ -7,45 +7,126 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D _rb2d;
 
+    [Header("Health system")]
+    [SerializeField] private int _maxHealth = 3;
+    private int _currentHealth;
+    [SerializeField] private Transform[] _healthPoints;
+
+    [Header("Developer options")]
     [SerializeField] private Slider _jumpSlider;
     [SerializeField] private float _jumpForceMultiplier = 1.5f;
     [SerializeField] private float _jumpForceMaximum = 8.0f;
     [SerializeField] private float _jumpForceMinimum = 2.0f;
     private float _jumpForce;
+    [SerializeField] private bool _isAlive = true;
+    [SerializeField] private bool _inImmortalMode = false;
+
+    [Header("Scoring System")]
+    [SerializeField] private GameManager _gameManager;
 
     void Start()
     {
         _rb2d = GetComponent<Rigidbody2D>();
+        _isAlive = true;
         _jumpSlider.minValue = 0;
         _jumpSlider.maxValue = _jumpForceMaximum;
+        _currentHealth = _maxHealth;
+        gameObject.transform.parent = null;
+        Debug.Log("Current health: " + _currentHealth);
     }
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Space)) 
+        if (Input.GetKey(KeyCode.Space) && gameObject.transform.parent != null)
         {
             if (_jumpForce <= _jumpForceMaximum) 
             {
                 _jumpForce += _jumpForceMultiplier * Time.deltaTime;
                 UpdateSlider();
             }
-            Debug.Log("[Holding down Space Key] Jump force: " + _jumpForce);
+            // Debug.Log("[Holding down Space Key] Jump force: " + _jumpForce);
         }
 
-        if (Input.GetKeyUp(KeyCode.Space)) 
+        if (Input.GetKeyUp(KeyCode.Space) && gameObject.transform.parent != null)
         {
             if (_jumpForce > _jumpForceMinimum)
             {
                 _rb2d.AddForce(Vector2.right + (Vector2.up * _jumpForce), ForceMode2D.Impulse);
-                Debug.Log("[Release Space Key] Jumped with force: " + _jumpForce);
+                // Debug.Log("[Release Space Key] Jumped with force: " + _jumpForce);
             }
             _jumpForce = 0;
             UpdateSlider();
         }
-
     }
 
-    void UpdateSlider() {
+    public void SetIsAlive(bool isAlive)
+    {
+        _isAlive = isAlive;
+    }
+
+    public bool GetIsAlive()
+    {
+        return _isAlive;
+    }
+
+    void UpdateSlider() 
+    {
         _jumpSlider.value = _jumpForce;
+    }
+
+    void UpdateHealth() 
+    {
+        
+    }
+
+    void OnCollisionEnter2D(Collision2D collision2D) 
+    {
+        if (collision2D.gameObject.tag == "Obstacle" && !_inImmortalMode)
+        {
+            Destroy(collision2D.gameObject);
+            _currentHealth--;
+            Debug.Log("Current health: " + _currentHealth);
+            if (_currentHealth <= 0)
+            {
+                SetIsAlive(false);
+                gameObject.transform.parent = null;
+            }
+            // if (gameObject.transform.parent != null)
+            // {
+            //     _currentHealth--;
+            //     Debug.Log("Current health: " + _currentHealth);
+            //     if (_currentHealth <= 0)
+            //     {
+            //         SetIsAlive(false);
+            //         gameObject.transform.parent = null;
+            //     }
+            // }
+        }
+
+        if (collision2D.gameObject.tag == "Border")
+        {
+            SetIsAlive(false);
+            gameObject.transform.parent = null;
+        }
+
+        if (collision2D.gameObject.tag == "Platform")
+        {
+            gameObject.transform.parent = collision2D.gameObject.transform;
+        }
+
+        if (collision2D.gameObject.tag == "Score")
+        {
+            ScoreBehavior scoreBehavior = collision2D.gameObject.GetComponent<ScoreBehavior>();
+            _gameManager.SetScore(_gameManager.GetScore() + scoreBehavior.GetScoreValue());
+            Destroy(collision2D.gameObject);
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision2D)
+    {
+        if (collision2D.gameObject.tag == "Platform")
+        {
+            gameObject.transform.parent = null;
+        }
     }
 }

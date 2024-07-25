@@ -4,18 +4,16 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-
     [Header("For Menu Manager")]
-
     [SerializeField] private RectTransform _pauseMenu;
     [SerializeField] private RectTransform _endMenu;
 
     [Header("For End Menu")]
-
-    [SerializeField] private Player _player;
+    [SerializeField] private PlayerController _player;
 
     [Header("Scoring System")]
     [SerializeField] private int _score;
+    [SerializeField] private int _maxScore;
     [SerializeField] private TextMeshProUGUI _textScore;
     [SerializeField] private TextMeshProUGUI _textFinalScore;
 
@@ -28,7 +26,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P) && _player.GetIsAlive())
         {
             ToPause();
         }
@@ -38,7 +36,19 @@ public class GameManager : MonoBehaviour
             EndGame();
         }
 
-        _textScore.text = "Score: " + _score;
+        if (_score < _maxScore)
+        {
+            _textScore.text = "Score: " + _score;
+        } 
+        else if (_score == _maxScore)
+        {
+            _textScore.text = "Max Score Reached! (" + _score + "/" + _maxScore + ") ";
+        }
+        else if (_score > _maxScore)
+        {
+            _textScore.text = "Continuing for the gain? Score: " + _score;
+        }
+        
     }
 
     public void EndGame()
