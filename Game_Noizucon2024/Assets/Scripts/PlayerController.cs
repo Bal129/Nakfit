@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +25,11 @@ public class PlayerController : MonoBehaviour
     [Header("Scoring System")]
     [SerializeField] private GameManager _gameManager;
 
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+
+    private bool jumpingAction;
+
     void Start()
     {
         _rb2d = GetComponent<Rigidbody2D>();
@@ -33,6 +39,12 @@ public class PlayerController : MonoBehaviour
         _currentHealth = _maxHealth;
         gameObject.transform.parent = null;
         Debug.Log("Current health: " + _currentHealth);
+        jumpingAction = false;
+
+        UpdateHealth(_currentHealth);
+
+        // Animation defaults
+        SetAnimation(true, false, false);
     }
 
     void Update()
@@ -41,6 +53,8 @@ public class PlayerController : MonoBehaviour
         {
             if (_jumpForce <= _jumpForceMaximum) 
             {
+                jumpingAction = true;
+                SetAnimation(false, true, false);
                 _jumpForce += _jumpForceMultiplier * Time.deltaTime;
                 UpdateSlider();
             }
@@ -51,11 +65,18 @@ public class PlayerController : MonoBehaviour
         {
             if (_jumpForce > _jumpForceMinimum)
             {
+                jumpingAction = false;
+                SetAnimation(false, false, true);
                 _rb2d.AddForce(Vector2.right + (Vector2.up * _jumpForce), ForceMode2D.Impulse);
                 // Debug.Log("[Release Space Key] Jumped with force: " + _jumpForce);
             }
             _jumpForce = 0;
             UpdateSlider();
+        }
+
+        if (!jumpingAction && _rb2d.velocity == Vector2.zero && gameObject.transform.parent != null)
+        {
+            SetAnimation(true, false, false);
         }
     }
 
@@ -74,35 +95,21 @@ public class PlayerController : MonoBehaviour
         _jumpSlider.value = _jumpForce;
     }
 
-    void UpdateHealth() 
+    void UpdateHealth(int currentHealthPoint)
     {
-        
-    }
-
-    void OnCollisionEnter2D(Collision2D collision2D) 
-    {
-        if (collision2D.gameObject.tag == "Obstacle" && !_inImmortalMode)
+        foreach (var healthPoint in _healthPoints)
         {
-            Destroy(collision2D.gameObject);
-            _currentHealth--;
-            Debug.Log("Current health: " + _currentHealth);
-            if (_currentHealth <= 0)
-            {
-                SetIsAlive(false);
-                gameObject.transform.parent = null;
-            }
-            // if (gameObject.transform.parent != null)
-            // {
-            //     _currentHealth--;
-            //     Debug.Log("Current health: " + _currentHealth);
-            //     if (_currentHealth <= 0)
-            //     {
-            //         SetIsAlive(false);
-            //         gameObject.transform.parent = null;
-            //     }
-            // }
+            healthPoint.gameObject.SetActive(false);
         }
 
+        for (int i = 0; i < currentHealthPoint; i++)
+        {
+            _healthPoints[i].gameObject.SetActive(true);
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision2D)
+    {
         if (collision2D.gameObject.tag == "Border")
         {
             SetIsAlive(false);
@@ -113,13 +120,6 @@ public class PlayerController : MonoBehaviour
         {
             gameObject.transform.parent = collision2D.gameObject.transform;
         }
-
-        if (collision2D.gameObject.tag == "Score")
-        {
-            ScoreBehavior scoreBehavior = collision2D.gameObject.GetComponent<ScoreBehavior>();
-            _gameManager.SetScore(_gameManager.GetScore() + scoreBehavior.GetScoreValue());
-            Destroy(collision2D.gameObject);
-        }
     }
 
     void OnCollisionExit2D(Collision2D collision2D)
@@ -128,5 +128,35 @@ public class PlayerController : MonoBehaviour
         {
             gameObject.transform.parent = null;
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D collider2D)
+    {
+        if (collider2D.gameObject.tag == "Obstacle" && !_inImmortalMode)
+        {
+            Destroy(collider2D.gameObject);
+            _currentHealth--;
+            Debug.Log("Current health: " + _currentHealth);
+            UpdateHealth(_currentHealth);
+            if (_currentHealth <= 0)
+            {
+                SetIsAlive(false);
+                gameObject.transform.parent = null;
+            }
+        }
+
+        if (collider2D.gameObject.tag == "Score")
+        {
+            ScoreBehavior scoreBehavior = collider2D.gameObject.GetComponent<ScoreBehavior>();
+            _gameManager.SetScore(_gameManager.GetScore() + scoreBehavior.GetScoreValue());
+            Destroy(collider2D.gameObject);
+        }
+    }
+
+    private void SetAnimation(bool isIdling, bool isCrouching, bool isJumping)
+    {
+        animator.SetBool("IsIdling", isIdling);
+        animator.SetBool("IsCrouching", isCrouching);
+        animator.SetBool("IsJumping", isJumping);
     }
 }
