@@ -51,13 +51,22 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space) && gameObject.transform.parent != null)
         {
-            if (_jumpForce <= _jumpForceMaximum) 
+            jumpingAction = true;
+            
+            if (_jumpForce > _jumpForceMaximum)
             {
-                jumpingAction = true;
+                _jumpForce = 0;
+                // UpdateSlider();
+            }
+
+            if (_jumpForce <= _jumpForceMaximum)
+            {
                 SetAnimation(false, true, false);
                 _jumpForce += _jumpForceMultiplier * Time.deltaTime;
-                UpdateSlider();
+                // UpdateSlider();
             }
+
+            UpdateSlider();
             // Debug.Log("[Holding down Space Key] Jump force: " + _jumpForce);
         }
 
@@ -72,6 +81,11 @@ public class PlayerController : MonoBehaviour
             }
             _jumpForce = 0;
             UpdateSlider();
+        }
+
+        if (!jumpingAction)
+        {
+            animator.SetFloat("Freefall", _rb2d.velocity.y);
         }
 
         if (!jumpingAction && _rb2d.velocity == Vector2.zero && gameObject.transform.parent != null)
