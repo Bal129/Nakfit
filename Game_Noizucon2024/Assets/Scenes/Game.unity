@@ -1314,7 +1314,7 @@ MonoBehaviour:
   - {fileID: 8762576432890971537, guid: 315a090d05a50424694bd018ba4b0664, type: 3}
   _obstacleSpawnRange: 3
   _obstacleMaxSpawnRate: 8
-  _initCd: 3
+  _initCd: 7
 --- !u!212 &617536568
 SpriteRenderer:
   m_ObjectHideFlags: 0

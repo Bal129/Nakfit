@@ -76,7 +76,7 @@ public class PlayerController : MonoBehaviour
             {
                 jumpingAction = false;
                 SetAnimation(false, false, true);
-                _rb2d.AddForce(Vector2.right + (Vector2.up * _jumpForce), ForceMode2D.Impulse);
+                _rb2d.AddForce((Vector2.right * 2f) + (Vector2.up * _jumpForce), ForceMode2D.Impulse);
                 // Debug.Log("[Release Space Key] Jumped with force: " + _jumpForce);
             }
             _jumpForce = 0;
