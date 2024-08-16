@@ -7,7 +7,7 @@
 </p>
 <h4>Controls</h4>
 <p>
-  They need to hold the jump key (in early development, a space key) to fill up the force meter and release it when the meter reach their desired value. When the motion sensor implemented later, instead of the traditional key bind, player need to squat to fill up the meter and stand to release it.
+  Player need to hold the jump key (in early development, a space key) to fill up the force meter and release it when the meter reach their desired value. When the motion sensor implemented later, instead of the traditional key bind, player need to squat to fill up the meter and stand to release it.
 </p>
 <h4>Objective</h4>
 <p>
@@ -28,6 +28,7 @@
 </p>
   
 <h2>What is Noizucon?</h2>
+
 <p>
   Noizucon is an urban lifestyle convention. From the Noizucon <a href='https://www.noizu.asia/'>main page<a/>:
   <blockquote cite='https://www.noizu.asia/'>
@@ -49,3 +50,32 @@
     Venue: Dewan Tun Chancellor, MMU Cyberjaya
   </li>
 </ul>
+
+<h2>Contributors</h2>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Contributions</th>
+  </tr>
+  <tr>
+    <td>Shazwan</td>
+    <td>Team leader, Backend developer.</td>
+  </tr>
+  <tr>
+    <td>Iqbal</td>
+    <td>Lead game developer, UI Artist.</td>
+  </tr>
+  <tr>
+    <td>Aisha</td>
+    <td>Machine learning engineer, Data analyst.</td>
+  </tr>
+  <tr>
+    <td>Irfan</td>
+    <td>Machine learning engineer, UI Artist, Animator.</td>
+  </tr>
+  <tr>
+    <td>Noizucon committees, Peers</td>
+    <td>Tester.</td>
+  </tr>
+</table>
