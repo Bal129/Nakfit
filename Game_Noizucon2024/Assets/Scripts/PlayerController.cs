@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Developer options")]
     [SerializeField] private Slider _jumpSlider;
+    [SerializeField] private Image _jumpSliderFill;
+    [SerializeField] private Image _jumpSliderArrow;
     [SerializeField] private float _jumpForceMultiplier = 1.5f;
     [SerializeField] private float _jumpForceMaximum = 8.0f;
     [SerializeField] private float _jumpForceMinimum = 2.0f;
@@ -29,6 +31,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator animator;
 
     private bool jumpingAction;
+    private float jumpingCooldown;
 
     void Start()
     {
@@ -40,34 +43,38 @@ public class PlayerController : MonoBehaviour
         gameObject.transform.parent = null;
         Debug.Log("Current health: " + _currentHealth);
         jumpingAction = false;
+        jumpingCooldown = 0;
 
         UpdateHealth(_currentHealth);
 
         // Animation defaults
-        SetAnimation(true, false, false);
+        SetAnimation(true, false, false, false);
     }
 
     void Update()
     {
         if (Input.GetKey(KeyCode.Space) && gameObject.transform.parent != null)
         {
-            jumpingAction = true;
+            if (jumpingCooldown <= 0) 
+            {
+                jumpingAction = true;
             
-            if (_jumpForce > _jumpForceMaximum)
-            {
-                _jumpForce = 0;
-                // UpdateSlider();
-            }
+                if (_jumpForce > _jumpForceMaximum)
+                {
+                    _jumpForce = 0;
+                    // UpdateSlider();
+                }
 
-            if (_jumpForce <= _jumpForceMaximum)
-            {
-                SetAnimation(false, true, false);
-                _jumpForce += _jumpForceMultiplier * Time.deltaTime;
-                // UpdateSlider();
-            }
+                if (_jumpForce <= _jumpForceMaximum)
+                {
+                    SetAnimation(false, true, false, false);
+                    _jumpForce += _jumpForceMultiplier * Time.deltaTime;
+                    // UpdateSlider();
+                }
 
-            UpdateSlider();
-            // Debug.Log("[Holding down Space Key] Jump force: " + _jumpForce);
+                UpdateSlider();
+                // Debug.Log("[Holding down Space Key] Jump force: " + _jumpForce);   
+            }
         }
 
         if (Input.GetKeyUp(KeyCode.Space) && gameObject.transform.parent != null)
@@ -75,9 +82,13 @@ public class PlayerController : MonoBehaviour
             if (_jumpForce > _jumpForceMinimum)
             {
                 jumpingAction = false;
-                SetAnimation(false, false, true);
+                SetAnimation(false, false, true, false);
                 _rb2d.AddForce((Vector2.right * 2f) + (Vector2.up * _jumpForce), ForceMode2D.Impulse);
                 // Debug.Log("[Release Space Key] Jumped with force: " + _jumpForce);
+            }
+            else 
+            {
+                SetAnimation(true, false, false, false);
             }
             _jumpForce = 0;
             UpdateSlider();
@@ -86,11 +97,13 @@ public class PlayerController : MonoBehaviour
         if (!jumpingAction)
         {
             animator.SetFloat("Freefall", _rb2d.velocity.y);
+            // SetAnimation(false, false, false, true);
         }
 
         if (!jumpingAction && _rb2d.velocity == Vector2.zero && gameObject.transform.parent != null)
         {
-            SetAnimation(true, false, false);
+            jumpingCooldown -= 1 * Time.deltaTime;
+            SetAnimation(true, false, false, false);
         }
     }
 
@@ -107,6 +120,16 @@ public class PlayerController : MonoBehaviour
     void UpdateSlider() 
     {
         _jumpSlider.value = _jumpForce;
+        if (_jumpSlider.value >= _jumpForceMinimum)
+        {
+            _jumpSliderFill.color = Color.green;
+            _jumpSliderArrow.color = Color.green;
+        }
+        else
+        {
+            _jumpSliderFill.color = Color.red;
+            _jumpSliderArrow.color = Color.red;
+        }
     }
 
     void UpdateHealth(int currentHealthPoint)
@@ -133,6 +156,8 @@ public class PlayerController : MonoBehaviour
         if (collision2D.gameObject.tag == "Platform")
         {
             gameObject.transform.parent = collision2D.gameObject.transform;
+            jumpingCooldown = 0.3f;
+            // SetAnimation(true, false, false, false);
         }
     }
 
@@ -149,13 +174,16 @@ public class PlayerController : MonoBehaviour
         if (collider2D.gameObject.tag == "Obstacle" && !_inImmortalMode)
         {
             Destroy(collider2D.gameObject);
-            _currentHealth--;
-            Debug.Log("Current health: " + _currentHealth);
-            UpdateHealth(_currentHealth);
-            if (_currentHealth <= 0)
+            if (!jumpingAction)
             {
-                SetIsAlive(false);
-                gameObject.transform.parent = null;
+                _currentHealth--;
+                Debug.Log("Current health: " + _currentHealth);
+                UpdateHealth(_currentHealth);
+                if (_currentHealth <= 0)
+                {
+                    SetIsAlive(false);
+                    gameObject.transform.parent = null;
+                }
             }
         }
 
@@ -167,10 +195,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void SetAnimation(bool isIdling, bool isCrouching, bool isJumping)
+    private void SetAnimation(bool isIdling, bool isCrouching, bool isJumping, bool isFalling)
     {
         animator.SetBool("IsIdling", isIdling);
         animator.SetBool("IsCrouching", isCrouching);
         animator.SetBool("IsJumping", isJumping);
+        animator.SetBool("IsFalling", isFalling);
     }
 }

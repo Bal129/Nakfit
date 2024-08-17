@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
         }
         else if (_score > _maxScore)
         {
-            _textScore.text = "Continuing for the gain? Score: " + _score;
+            _textScore.text = "Highest Score: " + _score;
         }
         
     }
