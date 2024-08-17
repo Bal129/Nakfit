@@ -5,10 +5,8 @@ public class MenuManager : MonoBehaviour
 {
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            ToGame();
-        }
+        if (Input.GetKeyDown(KeyCode.S)) ToGame();
+        if (Input.GetKeyDown(KeyCode.Q)) ToQuit();
     }
 
     public void ToGame()

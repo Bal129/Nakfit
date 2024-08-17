@@ -31,6 +31,16 @@ public class GameManager : MonoBehaviour
             ToPause();
         }
 
+        if (_pauseMenu.gameObject.activeInHierarchy) {
+            if (Input.GetKeyDown(KeyCode.U)) Resume();
+            if (Input.GetKeyDown(KeyCode.I)) Restart();
+            if (Input.GetKeyDown(KeyCode.O)) ToMenu();
+        }
+
+        if (_endMenu.gameObject.activeInHierarchy) {
+            if (Input.GetKeyDown(KeyCode.K)) ToMenu();
+        }
+
         if (!_player.GetIsAlive())
         {
             EndGame();
