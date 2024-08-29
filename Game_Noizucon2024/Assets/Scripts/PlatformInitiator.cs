@@ -19,6 +19,7 @@ public class PlatformInitiator : MonoBehaviour
     [SerializeField] private int _obstacleMaxSpawnRate = 3;
     private int _obstacleSpawnRate;
     private int _obstacleSpawnCount;
+    private int _selectedObstacle;
 
     [Header("Developer Options")]
     [SerializeField] private float _initCd = 3;
@@ -82,9 +83,10 @@ public class PlatformInitiator : MonoBehaviour
             // Instantiate obstacle
             if (_obstacleSpawnCount >= _obstacleSpawnRate)
             {
+                _selectedObstacle = UnityEngine.Random.Range(0,_obstacles.Length);
                 int _range = UnityEngine.Random.Range(1,_obstacleSpawnRange);
                 GameObject newObstacle = Instantiate(
-                    _obstacles[0], // 0 for now, may change later
+                    _obstacles[_selectedObstacle],
                     new Vector3(transform.position.x, _newPositionY + (1.2f * _range)), // 1.2f refers to the scalling, may change later
                     Quaternion.identity
                 );
