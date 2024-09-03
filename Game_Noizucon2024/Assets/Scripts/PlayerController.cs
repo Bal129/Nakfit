@@ -174,17 +174,26 @@ public class PlayerController : MonoBehaviour
         if (collider2D.gameObject.tag == "Obstacle" && !_inImmortalMode)
         {
             Destroy(collider2D.gameObject);
-            if (!jumpingAction)
-            {
-                _currentHealth--;
-                Debug.Log("Current health: " + _currentHealth);
-                UpdateHealth(_currentHealth);
-                if (_currentHealth <= 0)
-                {
-                    SetIsAlive(false);
-                    gameObject.transform.parent = null;
+            // if (!jumpingAction)
+            // {
+                if (gameObject.transform.parent == null && (_rb2d.velocity.y < 0)) {
+                    _rb2d.AddForce(
+                        (Vector2.up * (_rb2d.velocity.y * -1 * 1.5f)) + (Vector2.left * _rb2d.velocity.x), 
+                        ForceMode2D.Impulse
+                    );
+                    animator.SetTrigger("DestroyObstacle");
                 }
-            }
+                else {
+                    _currentHealth--;
+                    Debug.Log("Current health: " + _currentHealth);
+                    UpdateHealth(_currentHealth);
+                    if (_currentHealth <= 0)
+                    {
+                        SetIsAlive(false);
+                        gameObject.transform.parent = null;
+                    }
+                }
+            // }
         }
 
         if (collider2D.gameObject.tag == "Score")
