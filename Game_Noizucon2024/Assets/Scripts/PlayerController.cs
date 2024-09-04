@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +13,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int _maxHealth = 3;
     private int _currentHealth;
     [SerializeField] private Transform[] _healthPoints;
+
+    [SerializeField] private RectTransform _hurtEffect;
 
     [Header("Developer options")]
     [SerializeField] private Slider _jumpSlider;
@@ -44,6 +47,13 @@ public class PlayerController : MonoBehaviour
         Debug.Log("Current health: " + _currentHealth);
         jumpingAction = false;
         jumpingCooldown = 0;
+
+        _hurtEffect.GetComponent<Image>().color = new Color(
+            _hurtEffect.GetComponent<Image>().color.r, 
+            _hurtEffect.GetComponent<Image>().color.g,
+            _hurtEffect.GetComponent<Image>().color.b,
+            0
+        );
 
         UpdateHealth(_currentHealth);
 
@@ -105,6 +115,11 @@ public class PlayerController : MonoBehaviour
             jumpingCooldown -= 1 * Time.deltaTime;
             SetAnimation(true, false, false, false);
         }
+    }
+
+    public bool getJumpingAction()
+    {
+        return jumpingAction;
     }
 
     public void SetIsAlive(bool isAlive)
