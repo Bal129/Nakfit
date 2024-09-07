@@ -14,8 +14,6 @@ public class PlayerController : MonoBehaviour
     private int _currentHealth;
     [SerializeField] private Transform[] _healthPoints;
 
-    [SerializeField] private RectTransform _hurtEffect;
-
     [Header("Developer options")]
     [SerializeField] private Slider _jumpSlider;
     [SerializeField] private Image _jumpSliderFill;
@@ -48,13 +46,6 @@ public class PlayerController : MonoBehaviour
         jumpingAction = false;
         jumpingCooldown = 0;
 
-        _hurtEffect.GetComponent<Image>().color = new Color(
-            _hurtEffect.GetComponent<Image>().color.r, 
-            _hurtEffect.GetComponent<Image>().color.g,
-            _hurtEffect.GetComponent<Image>().color.b,
-            0
-        );
-
         UpdateHealth(_currentHealth);
 
         // Animation defaults
@@ -63,10 +54,17 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        Debug.Log("Jumping cooldown: " + jumpingCooldown);
+        Debug.Log("Parent: " + gameObject.transform.parent);
+        Debug.Log("Velocity: " + _rb2d.velocity);
+        Debug.Log("Jumping action: " + jumpingAction);
+        
+
         if (Input.GetKey(KeyCode.Space) && gameObject.transform.parent != null)
         {
             if (jumpingCooldown <= 0) 
             {
+                jumpingCooldown = 0;
                 jumpingAction = true;
             
                 if (_jumpForce > _jumpForceMaximum)
@@ -81,7 +79,7 @@ public class PlayerController : MonoBehaviour
                     _jumpForce += _jumpForceMultiplier * Time.deltaTime;
                     // UpdateSlider();
                 }
-
+                
                 UpdateSlider();
                 // Debug.Log("[Holding down Space Key] Jump force: " + _jumpForce);   
             }
@@ -98,6 +96,7 @@ public class PlayerController : MonoBehaviour
             }
             else 
             {
+                jumpingAction = false;
                 SetAnimation(true, false, false, false);
             }
             _jumpForce = 0;
